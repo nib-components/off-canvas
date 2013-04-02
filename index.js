@@ -21,9 +21,11 @@ function OffCanvas(options) {
   this.close = this.close.bind(this);
   this.open = this.open.bind(this);
   this.isOpen = false;
+  this.isEnabled = false;
 }
 
 OffCanvas.prototype.open = function() {
+  if(!this.isEnabled) return false;
   this.container.classList.add(this.className);
   window.addEventListener('resize', this.close);
   this.bodyElement.addEventListener('click', this.close);
@@ -31,6 +33,7 @@ OffCanvas.prototype.open = function() {
 };
 
 OffCanvas.prototype.close = function() {
+  if(!this.isEnabled) return false;
   this.container.classList.remove(this.className);
   window.removeEventListener('resize', this.close);
   this.bodyElement.removeEventListener('click', this.close);
@@ -42,14 +45,17 @@ OffCanvas.prototype.toggle = function() {
 };
 
 OffCanvas.prototype.disable = function() {
+  if(!this.isEnabled) return;
   this.trigger.removeEventListener('click');
 };
 
 OffCanvas.prototype.enable = function() {
+  if(!this.trigger) return false;
   this.trigger.addEventListener('click', function(event){
     event.preventDefault();
     this.toggle();
   }.bind(this));
+  this.isEnabled = true;
 };
 
 module.exports = function(options) {

@@ -13,11 +13,11 @@
 function OffCanvas(options) {
   options = options || {};
   this.options = options;
-  this.container = options.container;
-  this.content = options.content;
-  this.bodyElement = options.bodyElement;
-  this.className = options.className;
-  this.trigger = options.trigger;
+  this.el = options.el;
+  this.content = options.content || this.el.querySelector('.js-content');
+  this.body = options.body || this.el.querySelector('.js-body');
+  this.className = options.className || 'is-open';
+  this.trigger = options.trigger || this.el.querySelector('.js-trigger');
   this.close = this.close.bind(this);
   this.open = this.open.bind(this);
   this.isOpen = false;
@@ -25,18 +25,24 @@ function OffCanvas(options) {
 }
 
 OffCanvas.prototype.open = function() {
-  if(!this.isEnabled) return false;
-  this.container.classList.add(this.className);
-  window.addEventListener('resize', this.close);
-  this.bodyElement.addEventListener('click', this.close);
+  if(!this.isEnabled || this.isOpen) return false;
+  this.el.classList.add(this.className);
+  setTimeout(function(){
+    // window.addEventListener('resize', this.close);
+    this.body.addEventListener('click', this.close);
+  }.bind(this), 0);
+  this.body.style.overflow = 'hidden';
+  this.body.style.height = window.innerHeight + 'px';
   this.isOpen = true;
 };
 
 OffCanvas.prototype.close = function() {
-  if(!this.isEnabled) return false;
-  this.container.classList.remove(this.className);
+  if(!this.isEnabled || !this.isOpen) return false;
+  this.el.classList.remove(this.className);
   window.removeEventListener('resize', this.close);
-  this.bodyElement.removeEventListener('click', this.close);
+  this.body.removeEventListener('click', this.close);
+  this.body.style.overflow = '';
+  this.body.style.height = null;
   this.isOpen = false;
 };
 
@@ -58,10 +64,10 @@ OffCanvas.prototype.enable = function() {
   this.isEnabled = true;
 };
 
-module.exports = function(options) {
+OffCanvas.create = function(options) {
   var o =  new OffCanvas(options);
   o.enable();
   return o;
 };
 
-module.exports.OffCanvas = OffCanvas;
+module.exports = OffCanvas;

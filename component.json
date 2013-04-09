@@ -2,5 +2,10 @@
   "name": "off-canvas",
   "version": "0.1.0",
   "description": "Create off-canvas, mobile navigation",
-  "scripts": ["index.js"]
+  "scripts": [
+    "index.js"
+  ],
+  "dependencies": {
+    "ecarter/css-emitter": "8d7c6a19d03686f5e5b6f0e88c253872c13da492"
+  }
 }

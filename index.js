@@ -9,6 +9,9 @@
 // 
 // menu.open();
 // menu.close();
+// 
+
+var emitter = require('css-emitter');
 
 function OffCanvas(options) {
   options = options || {};
@@ -22,6 +25,11 @@ function OffCanvas(options) {
   this.open = this.open.bind(this);
   this.isOpen = false;
   this.isEnabled = false;
+  emitter(this.body).bind(function(){
+    if(this.isOpen) return;
+    this.body.style.height = null;
+    this.body.style.overflow = '';
+  }.bind(this));
 }
 
 OffCanvas.prototype.open = function() {
@@ -41,8 +49,6 @@ OffCanvas.prototype.close = function() {
   this.el.classList.remove(this.className);
   window.removeEventListener('resize', this.close);
   this.body.removeEventListener('click', this.close);
-  this.body.style.overflow = '';
-  this.body.style.height = null;
   this.isOpen = false;
 };
 

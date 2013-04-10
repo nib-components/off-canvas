@@ -23,44 +23,97 @@ function OffCanvas(options) {
   this.trigger = options.trigger || this.el.querySelector('.js-trigger');
   this.close = this.close.bind(this);
   this.open = this.open.bind(this);
+  this._onWindowResize = this._onWindowResize.bind(this);
   this.isOpen = false;
   this.isEnabled = false;
+
+  // When the menu has finished closing
   emitter(this.body).bind(function(){
     if(this.isOpen) return;
     this.body.style.height = null;
     this.body.style.overflow = '';
+    window.removeEventListener('resize', this._onWindowResize);
   }.bind(this));
+
 }
 
+/**
+ * Resize the menu container to match the window height
+ * @return {void}
+ */
+OffCanvas.prototype._resize = function() {
+  this.body.style.overflow = 'hidden';
+  this.body.style.height = window.innerHeight + 'px';
+};
+
+/**
+ * When the window is resized we need to update the menu
+ * rendering or close the menu
+ * @return {void}
+ */
+OffCanvas.prototype._onWindowResize = function() {
+  this._resize();
+};
+
+/**
+ * Push a function to fire after the current callstack
+ * @param  {Function} callback
+ * @return {void}
+ */
+OffCanvas.prototype._delay = function(callback){
+  setTimeout(callback.bind(this), 0);
+};
+
+/**
+ * Open the menu
+ * @return {void}
+ */
 OffCanvas.prototype.open = function() {
   if(!this.isEnabled || this.isOpen) return false;
   this.el.classList.add(this.className);
-  setTimeout(function(){
-    // window.addEventListener('resize', this.close);
+
+  // So the click to open to menu doesn't immediately close it
+  this._delay(function(){
     this.body.addEventListener('click', this.close);
-  }.bind(this), 0);
-  this.body.style.overflow = 'hidden';
-  this.body.style.height = window.innerHeight + 'px';
+  });
+
+  window.addEventListener('resize', this._onWindowResize);
+  this._resize();
   this.isOpen = true;
 };
 
+/**
+ * Close the menu
+ * @return {void}
+ */
 OffCanvas.prototype.close = function() {
   if(!this.isEnabled || !this.isOpen) return false;
   this.el.classList.remove(this.className);
-  window.removeEventListener('resize', this.close);
   this.body.removeEventListener('click', this.close);
   this.isOpen = false;
 };
 
+/**
+ * Toggle the menu state
+ * @return {void}
+ */
 OffCanvas.prototype.toggle = function() {
   return ((this.isOpen) ? this.close() : this.open());
 };
 
+/**
+ * Disable the menu
+ * @return {void}
+ */
 OffCanvas.prototype.disable = function() {
   if(!this.isEnabled) return;
   this.trigger.removeEventListener('click');
 };
 
+/**
+ * Enable the menu
+ * @return {void}
+ */
 OffCanvas.prototype.enable = function() {
   if(!this.trigger) return false;
   this.trigger.addEventListener('click', function(event){
@@ -70,6 +123,11 @@ OffCanvas.prototype.enable = function() {
   this.isEnabled = true;
 };
 
+/**
+ * Factory method to create menus
+ * @param  {Object} options 
+ * @return {OffCanvas}
+ */
 OffCanvas.create = function(options) {
   var o =  new OffCanvas(options);
   o.enable();

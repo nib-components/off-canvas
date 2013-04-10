@@ -1,6 +1,6 @@
 {
   "name": "off-canvas",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Create off-canvas, mobile navigation",
   "scripts": [
     "index.js"

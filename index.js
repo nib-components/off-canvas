@@ -42,7 +42,7 @@ function OffCanvas(options) {
  * @return {void}
  */
 OffCanvas.prototype._resize = function() {
-  this.close;
+  this.close();
 };
 
 /**

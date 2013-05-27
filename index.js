@@ -38,12 +38,11 @@ function OffCanvas(options) {
 }
 
 /**
- * Resize the menu container to match the window height
+ * On resize, close the menu container
  * @return {void}
  */
 OffCanvas.prototype._resize = function() {
-  this.body.style.overflow = 'hidden';
-  this.body.style.height = window.innerHeight + 'px';
+  this.close;
 };
 
 /**

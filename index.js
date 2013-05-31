@@ -6,10 +6,10 @@
 //   trigger: '.js-toggle-off-canvas',
 //   className: 'is-open'
 // });
-// 
+//
 // menu.open();
 // menu.close();
-// 
+//
 
 var emitter = require('css-emitter');
 
@@ -77,7 +77,8 @@ OffCanvas.prototype.open = function() {
   });
 
   window.addEventListener('resize', this._onWindowResize);
-  this._resize();
+  this.body.style.overflow = 'hidden';
+  this.body.style.height = window.innerHeight + 'px';
   this.isOpen = true;
 };
 
@@ -124,7 +125,7 @@ OffCanvas.prototype.enable = function() {
 
 /**
  * Factory method to create menus
- * @param  {Object} options 
+ * @param  {Object} options
  * @return {OffCanvas}
  */
 OffCanvas.create = function(options) {

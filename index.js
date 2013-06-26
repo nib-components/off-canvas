@@ -15,6 +15,7 @@ var emitter = require('css-emitter');
 
 function OffCanvas(options) {
   options = options || {};
+  var resize = this._onWindowResize.bind(this);
   this.options = options;
   this.el = options.el;
   this.content = options.content || this.el.querySelector('.js-content');
@@ -23,7 +24,6 @@ function OffCanvas(options) {
   this.trigger = options.trigger || this.el.querySelector('.js-trigger');
   this.close = this.close.bind(this);
   this.open = this.open.bind(this);
-  this._onWindowResize = this._onWindowResize.bind(this);
   this.isOpen = false;
   this.isEnabled = false;
 
@@ -31,11 +31,13 @@ function OffCanvas(options) {
   emitter(this.body).bind(function(){
     if(this.isOpen) {
       this.body.addEventListener('click', this.close);
-      window.addEventListener('resize', this._onWindowResize);
+      setTimeout(function(){
+        window.addEventListener('resize', resize);
+      }, 10);
     }
     else {
       this.body.removeEventListener('click', this.close);
-      window.removeEventListener('resize', this._onWindowResize);
+      window.removeEventListener('resize', resize);
       this.body.style.height = null;
       this.body.style.overflow = '';
     }

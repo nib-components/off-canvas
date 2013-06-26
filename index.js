@@ -29,10 +29,16 @@ function OffCanvas(options) {
 
   // When the menu has finished closing
   emitter(this.body).bind(function(){
-    if(this.isOpen) return;
-    this.body.style.height = null;
-    this.body.style.overflow = '';
-    window.removeEventListener('resize', this._onWindowResize);
+    if(this.isOpen) {
+      this.body.addEventListener('click', this.close);
+      window.addEventListener('resize', this._onWindowResize);
+    }
+    else {
+      this.body.removeEventListener('click', this.close);
+      window.removeEventListener('resize', this._onWindowResize);
+      this.body.style.height = null;
+      this.body.style.overflow = '';
+    }
   }.bind(this));
 
 }
@@ -69,17 +75,10 @@ OffCanvas.prototype._delay = function(callback){
  */
 OffCanvas.prototype.open = function() {
   if(!this.isEnabled || this.isOpen) return false;
+  this.isOpen = true;
   this.el.classList.add(this.className);
-
-  // So the click to open to menu doesn't immediately close it
-  this._delay(function(){
-    this.body.addEventListener('click', this.close);
-  });
-
-  window.addEventListener('resize', this._onWindowResize);
   this.body.style.overflow = 'hidden';
   this.body.style.height = window.innerHeight + 'px';
-  this.isOpen = true;
 };
 
 /**
@@ -88,9 +87,8 @@ OffCanvas.prototype.open = function() {
  */
 OffCanvas.prototype.close = function() {
   if(!this.isEnabled || !this.isOpen) return false;
-  this.el.classList.remove(this.className);
-  this.body.removeEventListener('click', this.close);
   this.isOpen = false;
+  this.el.classList.remove(this.className);
 };
 
 /**

@@ -1,6 +1,6 @@
 #Off-Canvas
 
-Controls the opening and closing of a off-canvas style menu.
+Controls the opening and closing of a off-canvas style navigation menu.
 
 Styles for this component can be found at nib-styles/off-canvas-menu
 
@@ -12,11 +12,10 @@ A simpler but less feature-rich component can be found at nib-components/slider
 
      var menu = offcanvas({
        container: document.body,
-       content: document.querySelector('.js-mobile-menu')
-       trigger: '.js-toggle-off-canvas',
-       className: 'is-open'
+       content: document.querySelector('.js-mobile-menu') // the content that sits on top of the menu until opened
+       trigger: '.js-toggle-off-canvas', // element that is clicked to toggle menu
+       className: 'is-open' // this class is added to the js-toggle-off-canvas element when opened
      });
 
-     menu.open();
+     menu.open(); 
      menu.close();
-    

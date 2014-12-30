@@ -1,15 +1,4 @@
-// var offcanvas = require('off-canvas');
-//
-// var menu = offcanvas({
-//   container: document.body,
-//   content: document.querySelector('.js-mobile-menu')
-//   trigger: '.js-toggle-off-canvas',
-//   className: 'is-open'
-// });
-//
-// menu.open();
-// menu.close();
-//
+
 
 var emitter = require('css-emitter');
 

@@ -1,0 +1,16 @@
+{
+  "name": "@nib-components/off-canvas",
+  "version": "0.1.7",
+  "description": "Create off-canvas, mobile navigation",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:nib-components/off-canvas.git"
+  },
+  "dependencies": {
+    "css-emitter-component": "0.1.0"
+  },
+  "browser": {
+    "css-emitter": "css-emitter-component"
+  }
+}

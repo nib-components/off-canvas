@@ -6,6 +6,7 @@
     "index.js"
   ],
   "dependencies": {
-    "anthonyshort/css-emitter": "0.1.0"
+    "anthonyshort/css-emitter": "0.1.0",
+    "component/throttle": "^1.0.0"
   }
 }

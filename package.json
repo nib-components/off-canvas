@@ -1,16 +1,26 @@
 {
   "name": "@nib-components/off-canvas",
-  "version": "0.1.7",
-  "description": "Create off-canvas, mobile navigation",
+  "version": "1.0.0",
+  "description": "Show and hide off-canvas content.",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:nib-components/off-canvas.git"
   },
   "dependencies": {
-    "css-emitter-component": "0.1.0"
+    "css-emitter-component": "^0.1.1",
+    "throttleit": "^1.0.0"
+  },
+  "devDependencies": {
+    "browserify": "^11.1.0",
+    "watchify": "^3.4.0"
   },
   "browser": {
-    "css-emitter": "css-emitter-component"
+    "css-emitter": "css-emitter-component",
+    "throttle": "throttleit"
+  },
+  "scripts": {
+    "example.build": "browserify example/index.js -o example/build.js",
+    "example.watch": "watchify example/index.js -o example/build.js"
   }
 }

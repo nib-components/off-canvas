@@ -1,126 +1,109 @@
+var css = require('css-emitter')
+var throttle = require('throttleit')
 
-
-var emitter = require('css-emitter');
-
-function OffCanvas(options) {
+/**
+ * Off-canvas component
+ * @constructor
+ * @param   {Object}              options
+ * @param   {HTMLElement}         options.el
+ * @param   {HTMLElement|string}  [options.openTrigger]
+ * @param   {HTMLElement|string}  [options.closeTrigger]
+ * @param   {string}              [options.visibleClass]
+ *
+ */
+function OffCanvas (options) {
   options = options || {};
-  var resize = this._onWindowResize.bind(this);
-  this.options = options;
+
+  if (!(this instanceof OffCanvas)) {
+    return new OffCanvas(options);
+  }
+
+  this.visibleClass = options.visibleClass || 'is-visible'
+
   this.el = options.el;
-  this.content = options.content || this.el.querySelector('.js-content');
-  this.body = options.body || this.el.querySelector('.js-body');
-  this.className = options.className || 'is-open';
-  this.trigger = options.trigger || this.el.querySelector('.js-trigger');
-  this.close = this.close.bind(this);
-  this.open = this.open.bind(this);
-  this.isOpen = false;
-  this.isEnabled = false;
+  if (!this.el) throw new Error('offcanvas: Element not found')
 
-  // When the menu has finished closing
-  emitter(this.body).bind(function(){
-    if(this.isOpen) {
-      this.body.addEventListener('click', this.close);
-      setTimeout(function(){
-        window.addEventListener('resize', resize);
-      }, 10);
-    }
-    else {
-      this.body.removeEventListener('click', this.close);
-      window.removeEventListener('resize', resize);
-      this.body.style.height = null;
-      this.body.style.overflow = '';
-    }
-  }.bind(this));
+  this.openTriggerEl = typeof options.openTrigger === 'string' || typeof options.openTrigger === 'undefined' ? this.el.querySelector(options.openTrigger || '.js-offcanvas-trigger-open') : options.openTrigger
+  this.closeTriggerEl = typeof options.closeTrigger === 'string' || typeof options.closeTrigger === 'undefined' ? this.el.querySelector(options.closeTrigger || '.js-offcanvas-trigger-close') : options.closeTrigger
 
+  this.onTriggerOpen = this.onTriggerOpen.bind(this)
+  this.onTriggerClose = this.onTriggerClose.bind(this)
+  this.onResize = throttle(this.onWindowResized.bind(this))
+
+  var self = this
+  css(this.el).bind(function () {
+    if (self.isVisible) {
+      window.addEventListener('resize', self.onResize)
+      if (self.openTriggerEl) self.openTriggerEl.removeEventListener('click', self.onTriggerOpen)
+      if (self.closeTriggerEl) self.closeTriggerEl.addEventListener('click', self.onTriggerClose)
+    } else {
+      window.removeEventListener('resize', self.onResize)
+      if (self.openTriggerEl) self.openTriggerEl.addEventListener('click', self.onTriggerOpen)
+      if (self.closeTriggerEl) self.closeTriggerEl.removeEventListener('click', self.onTriggerClose)
+    }
+  })
+
+  this.isVisible = false;
+  if (this.openTriggerEl) this.openTriggerEl.addEventListener('click', this.onTriggerOpen)
 }
 
-/**
- * On resize, close the menu container
- * @return {void}
- */
-OffCanvas.prototype._resize = function() {
-  this.close();
-};
+OffCanvas.prototype = {
 
-/**
- * When the window is resized we need to update the menu
- * rendering or close the menu
- * @return {void}
- */
-OffCanvas.prototype._onWindowResize = function() {
-  this._resize();
-};
+  /**
+   * Show the off-canvas content
+   * @returns {OffCanvas}
+   */
+  show: function () {
+    if (this.isVisible) return this
+    this.isVisible = true
+    this.el.classList.add(this.visibleClass)
+    return this
+  },
 
-/**
- * Push a function to fire after the current callstack
- * @param  {Function} callback
- * @return {void}
- */
-OffCanvas.prototype._delay = function(callback){
-  setTimeout(callback.bind(this), 0);
-};
+  /**
+   * Hide the off-canvas content
+   * @returns {OffCanvas}
+   */
+  hide: function () {
+    if (!this.isVisible) return this
+    this.isVisible = false
+    this.el.classList.remove(this.visibleClass)
+    return this
+  },
 
-/**
- * Open the menu
- * @return {void}
- */
-OffCanvas.prototype.open = function() {
-  if(!this.isEnabled || this.isOpen) return false;
-  this.isOpen = true;
-  this.el.classList.add(this.className);
-  this.body.style.overflow = 'hidden';
-  this.body.style.height = window.innerHeight + 'px';
-};
+  /**
+   * Toggle whether the off-canvas content is visible
+   * @returns {OffCanvas}
+   */
+  toggle: function () {
+    this.isVisible ? this.hide() : this.show()
+    return this;
+  },
 
-/**
- * Close the menu
- * @return {void}
- */
-OffCanvas.prototype.close = function() {
-  if(!this.isEnabled || !this.isOpen) return false;
-  this.isOpen = false;
-  this.el.classList.remove(this.className);
-};
+  /**
+   * Handle user events
+   * @param event
+   */
+  onTriggerOpen: function (event) {
+    this.show()
+  },
 
-/**
- * Toggle the menu state
- * @return {void}
- */
-OffCanvas.prototype.toggle = function() {
-  return ((this.isOpen) ? this.close() : this.open());
-};
+  /**
+   * Handle user events
+   * @param event
+   */
+  onTriggerClose: function (event) {
+    this.hide()
+  },
 
-/**
- * Disable the menu
- * @return {void}
- */
-OffCanvas.prototype.disable = function() {
-  if(!this.isEnabled) return;
-  this.trigger.removeEventListener('click');
-};
+  /**
+   * Handle user events
+   * @param event
+   */
+  onWindowResized: function (event) {
+    this.hide()
+  }
 
-/**
- * Enable the menu
- * @return {void}
- */
-OffCanvas.prototype.enable = function() {
-  if(!this.trigger) return false;
-  this.trigger.addEventListener('click', function(event){
-    event.preventDefault();
-    this.toggle();
-  }.bind(this));
-  this.isEnabled = true;
-};
-
-/**
- * Factory method to create menus
- * @param  {Object} options
- * @return {OffCanvas}
- */
-OffCanvas.create = function(options) {
-  var o =  new OffCanvas(options);
-  o.enable();
-  return o;
-};
+}
 
 module.exports = OffCanvas;
